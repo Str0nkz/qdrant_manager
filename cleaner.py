@@ -10,8 +10,8 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
-from .config import CANONICAL_TEXT_FIELDS
-from .dependencies import (
+from config import CANONICAL_TEXT_FIELDS, QDRANT_API_KEY
+from dependencies import (
     CuMLDBSCAN,
     GPU_CLUSTERING_AVAILABLE,
     IsolationForest,
@@ -31,16 +31,25 @@ from .dependencies import (
 class QdrantCleaner:
     """Collection cleaning utilities"""
 
-    def __init__(self, host="localhost", port=6333):
+    def __init__(self, host="localhost", port=6333, api_key=None):
         if QdrantClient is None:
             raise ImportError("qdrant-client required")
-        
-        if host.startswith("http://") or host.startswith("https://"):
-            parsed = urlparse(host)
-            host = parsed.hostname
-            port = parsed.port or port
-        
-        self.client = QdrantClient(host=host, port=int(port))
+
+        api_key = api_key or QDRANT_API_KEY
+
+        # Use 'url' parameter for HTTPS/cloud, 'host'+'port' for local HTTP
+        if host.startswith("https://"):
+            client_kwargs = {"url": host}
+            if api_key:
+                client_kwargs["api_key"] = api_key
+        elif host.startswith("http://"):
+            client_kwargs = {"url": host}
+        else:
+            client_kwargs = {"host": host, "port": int(port)}
+            if api_key:
+                client_kwargs["api_key"] = api_key
+
+        self.client = QdrantClient(**client_kwargs)
         self.collection_name = None
         self.has_optimize_method = hasattr(self.client, 'optimize_collection')
 
