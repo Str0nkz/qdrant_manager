@@ -2,6 +2,8 @@
 
 A lean, open-source Qdrant collection management tool focused on inspection, deduplication, vector repair, sparse-content detection, and targeted cleanup tasks.
 
+Supports both **local Qdrant** (Docker/self-hosted) and **Qdrant Cloud**.
+
 ## Installation
 
 ```bash
@@ -24,17 +26,27 @@ The public package surface is intentionally small:
 
 ## Configuration
 
-The tool reads `QDRANT_URL` from the environment and defaults to `http://localhost:6333`.
+The tool reads `QDRANT_URL` and `QDRANT_API_KEY` from the environment.
 
+**Local Qdrant (Docker/self-hosted):**
 ```bash
 export QDRANT_URL=http://localhost:6333
-python -m qdrant_manager
+python __main__.py
 ```
+
+**Qdrant Cloud:**
+```bash
+export QDRANT_URL=https://<your-cluster-id>.<region>.cloud.qdrant.io
+export QDRANT_API_KEY=<your-api-key>
+python __main__.py
+```
+
+Note: Qdrant Cloud URLs should **not** include `:6333`. Use the full HTTPS URL from your Qdrant Cloud dashboard.
 
 ## Launching the Cleaner CLI
 
 ```bash
-python -m qdrant_manager
+python __main__.py
 ```
 
 On startup you will be prompted for a Qdrant URL (pre-filled from `QDRANT_URL` or `http://localhost:6333`). The CLI checks connectivity immediately and shows a green **Connected** or red **Unreachable** status. If the instance is not reachable you can enter a different URL or continue anyway — the main menu stays up and reports errors per-action rather than crashing.
@@ -44,7 +56,12 @@ On startup you will be prompted for a Qdrant URL (pre-filled from `QDRANT_URL` o
 ```python
 from qdrant_manager import QdrantCleaner
 
+# Local Qdrant
 cleaner = QdrantCleaner(host="localhost", port=6333)
+
+# Qdrant Cloud (with API key)
+cleaner = QdrantCleaner(host="https://<cluster-id>.<region>.cloud.qdrant.io", api_key="<your-api-key>")
+
 cleaner.set_collection("my_collection")
 
 summary = cleaner.analyze_collection(progress_callback=print)

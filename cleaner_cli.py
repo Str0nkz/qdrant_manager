@@ -5,8 +5,8 @@ import sys
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 
-from .cleaner import QdrantCleaner
-from .config import QDRANT_DIRECT
+from cleaner import QdrantCleaner
+from config import QDRANT_DIRECT, QDRANT_API_KEY
 
 
 _COLOUR = sys.stdout.isatty()
@@ -77,13 +77,14 @@ class QdrantCleanerCLI:
         self.collections: List[Dict[str, Any]] = []
         self._set_qdrant_url(qdrant_url)
 
-    def _set_qdrant_url(self, qdrant_url: str) -> None:
+    def _set_qdrant_url(self, qdrant_url: str, api_key: str = None) -> None:
         qdrant_url = (qdrant_url or "").strip() or QDRANT_DIRECT
         parsed = urlparse(qdrant_url)
         host = parsed.hostname or "localhost"
         port = parsed.port or 6333
+        api_key = api_key or QDRANT_API_KEY
         self.qdrant_url = qdrant_url
-        self.cleaner = QdrantCleaner(host=host, port=port)
+        self.cleaner = QdrantCleaner(host=host, port=port, api_key=api_key)
         self.collections = []
 
     def _progress(self, message: str) -> None:

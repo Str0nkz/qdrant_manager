@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .cleaner_cli import QdrantCleanerCLI
+from cleaner_cli import QdrantCleanerCLI
 
 
 def main() -> None:
