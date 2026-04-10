@@ -11,7 +11,7 @@ pip install -r requirements.txt
 Or install directly from a repository:
 
 ```bash
-pip install git+https://github.com/yourusername/qdrant_manager_oss.git
+pip install git+https://github.com/Str0nkz/qdrant_manager.git
 ```
 
 ## Package Surface
