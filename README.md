@@ -1,6 +1,6 @@
-# Qdrant Cleaner
+# Qdrant Manager
 
-A lean, open-source Qdrant collection cleaner focused on inspection, deduplication, vector repair, sparse-content detection, and targeted cleanup tasks.
+A lean, open-source Qdrant collection management tool focused on inspection, deduplication, vector repair, sparse-content detection, and targeted cleanup tasks.
 
 ## Installation
 
@@ -24,7 +24,7 @@ The public package surface is intentionally small:
 
 ## Configuration
 
-The cleaner reads `QDRANT_URL` from the environment and defaults to `http://localhost:6333`.
+The tool reads `QDRANT_URL` from the environment and defaults to `http://localhost:6333`.
 
 ```bash
 export QDRANT_URL=http://localhost:6333
