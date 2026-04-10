@@ -1,0 +1,6 @@
+# Core runtime dependencies for the Qdrant Cleaner
+qdrant-client>=1.9.1
+
+# Vector analysis (optional but recommended)
+numpy>=1.26.0
+scikit-learn>=1.4.0
