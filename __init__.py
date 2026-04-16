@@ -1,5 +1,5 @@
-"""Public package surface for the standalone Qdrant cleaner."""
-from .cleaner import QdrantCleaner
-from .cleaner_cli import QdrantCleanerCLI
+"""Public package surface for the Qdrant Manager."""
+from .manager import QdrantManager
+from .manager_cli import QdrantManagerCLI
 
-__all__ = ["QdrantCleaner", "QdrantCleanerCLI"]
+__all__ = ["QdrantManager", "QdrantManagerCLI"]

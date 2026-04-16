@@ -1,4 +1,4 @@
-# Core runtime dependencies for the Qdrant Cleaner
+# Core runtime dependencies for the Qdrant Manager
 qdrant-client>=1.9.1
 
 # Vector analysis (optional but recommended)

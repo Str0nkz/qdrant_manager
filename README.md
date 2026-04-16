@@ -18,8 +18,8 @@ pip install git+https://github.com/Str0nkz/qdrant_manager.git
 
 The public package surface is intentionally small:
 
-- `qdrant_manager.cleaner` — synchronous collection cleaner built on `qdrant-client`
-- `qdrant_manager.cleaner_cli` — interactive cleaner-only CLI
+- `qdrant_manager.manager` — synchronous collection manager built on `qdrant-client`
+- `qdrant_manager.manager_cli` — interactive manager CLI
 - `qdrant_manager.config` — OSS-safe config for the Qdrant endpoint and canonical text fields
 
 ## Configuration
@@ -31,7 +31,7 @@ export QDRANT_URL=http://localhost:6333
 python -m qdrant_manager
 ```
 
-## Launching the Cleaner CLI
+## Launching the Manager CLI
 
 ```bash
 python -m qdrant_manager
@@ -42,13 +42,13 @@ On startup you will be prompted for a Qdrant URL (pre-filled from `QDRANT_URL` o
 ## Programmatic Usage
 
 ```python
-from qdrant_manager import QdrantCleaner
+from qdrant_manager import QdrantManager
 
-cleaner = QdrantCleaner(host="localhost", port=6333)
-cleaner.set_collection("my_collection")
+manager = QdrantManager(host="localhost", port=6333)
+manager.set_collection("my_collection")
 
-summary = cleaner.analyze_collection(progress_callback=print)
-result = cleaner.one_stop_clean(dry_run=True, progress_callback=print)
+summary = manager.analyze_collection(progress_callback=print)
+result = manager.one_stop_clean(dry_run=True, progress_callback=print)
 ```
 
 ## CLI Features
@@ -66,7 +66,7 @@ The interactive CLI provides the following capabilities:
 
 ## GPU-Accelerated Clustering
 
-Semantic deduplication and DBSCAN-based outlier detection can use GPU acceleration when RAPIDS cuML is installed and compatible with your CUDA runtime. The cleaner accepts a clustering backend of `auto`, `gpu`, or `cpu`:
+Semantic deduplication and DBSCAN-based outlier detection can use GPU acceleration when RAPIDS cuML is installed and compatible with your CUDA runtime. The manager accepts a clustering backend of `auto`, `gpu`, or `cpu`:
 
 - `auto` — prefers GPU DBSCAN and falls back to CPU automatically
 - `gpu` — attempts the GPU path first, then falls back to CPU with a warning if the CUDA stack is not usable
@@ -148,12 +148,12 @@ After deletion, run **Semantic Deduplication** (option 5) — removing sparse ch
 ### Programmatic Usage
 
 ```python
-from qdrant_manager import QdrantCleaner
+from qdrant_manager import QdrantManager
 
-cleaner = QdrantCleaner(host="localhost", port=6333)
-cleaner.set_collection("my_collection")
+manager = QdrantManager(host="localhost", port=6333)
+manager.set_collection("my_collection")
 
-result = cleaner.scan_sparse(
+result = manager.scan_sparse(
     percentile=0.10,       # or: threshold=0.65 / top_n=500
     vector_weight=0.55,
     action="tag",          # "report" | "tag" | "delete"

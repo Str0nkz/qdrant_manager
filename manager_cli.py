@@ -1,11 +1,11 @@
-"""Lean interactive CLI for the open-source Qdrant cleaner."""
+"""Lean interactive CLI for the open-source Qdrant Manager."""
 from __future__ import annotations
 
 import sys
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 
-from .cleaner import QdrantCleaner
+from .manager import QdrantManager
 from .config import QDRANT_DIRECT
 
 
@@ -56,8 +56,8 @@ def _hr(width: int = 62, ch: str = "─") -> None:
     print(f"  {dim(ch * width)}")
 
 
-class QdrantCleanerCLI:
-    """Cleaner-focused Qdrant Manager CLI"""
+class QdrantManagerCLI:
+    """Qdrant Manager CLI"""
 
     MENU = [
         ("1", "List Collections"),
@@ -73,7 +73,7 @@ class QdrantCleanerCLI:
 
     def __init__(self, *, qdrant_url: str = QDRANT_DIRECT) -> None:
         self.qdrant_url = ""
-        self.cleaner: Optional[QdrantCleaner] = None
+        self.manager: Optional[QdrantManager] = None
         self.collections: List[Dict[str, Any]] = []
         self._set_qdrant_url(qdrant_url)
 
@@ -83,7 +83,7 @@ class QdrantCleanerCLI:
         host = parsed.hostname or "localhost"
         port = parsed.port or 6333
         self.qdrant_url = qdrant_url
-        self.cleaner = QdrantCleaner(host=host, port=port)
+        self.manager = QdrantManager(host=host, port=port)
         self.collections = []
 
     def _progress(self, message: str) -> None:
@@ -132,9 +132,9 @@ class QdrantCleanerCLI:
 
     def _check_connection(self) -> bool:
         """Ping Qdrant and print a green/red status line. Returns True if reachable."""
-        if self.cleaner is None:
+        if self.manager is None:
             self._set_qdrant_url(self.qdrant_url or QDRANT_DIRECT)
-        if self.cleaner.ping():
+        if self.manager.ping():
             ok(f"Connected  {dim(self.qdrant_url)}")
             return True
         fail(f"Unreachable  {dim(self.qdrant_url)}")
@@ -142,10 +142,10 @@ class QdrantCleanerCLI:
 
     def load_collections(self) -> bool:
         """Load collections. Returns True on success, False on connection failure."""
-        if self.cleaner is None:
+        if self.manager is None:
             self._set_qdrant_url(self.qdrant_url or QDRANT_DIRECT)
         try:
-            self.collections = self.cleaner.list_collections()
+            self.collections = self.manager.list_collections()
             return True
         except Exception as exc:
             warn(f"Could not load collections: {exc}")
@@ -159,14 +159,14 @@ class QdrantCleanerCLI:
             self.load_collections()
 
     def _print_header(self) -> None:
-        title = "QDRANT CLEANER"
+        title = "QDRANT MANAGER"
         width = 62
         print(f"  {dim('═' * width)}")
         print(f"  {bold(cyan(title.center(width)))}")
         print(f"  {dim('═' * width)}")
         print(f"  {dim('Endpoint:')} {cyan(self.qdrant_url)}")
         _hr(width)
-        print(f"  {dim('Cleaner-only OSS mode: no proxy, ingest, migrate, or refresh actions exposed.')}")
+        print(f"  {dim('OSS mode: no proxy, ingest, migrate, or refresh actions exposed.')}")
 
     def _print_menu(self) -> None:
         self._print_header()
@@ -181,9 +181,9 @@ class QdrantCleanerCLI:
     def _select_collection(self, prompt: str) -> Optional[str]:
         selection = self._choose_collection(prompt)
         if selection:
-            if self.cleaner is None:
+            if self.manager is None:
                 self._set_qdrant_url(self.qdrant_url or QDRANT_DIRECT)
-            self.cleaner.set_collection(selection)
+            self.manager.set_collection(selection)
         return selection
 
     def _list_collections(self) -> None:
@@ -206,7 +206,7 @@ class QdrantCleanerCLI:
         collection = self._select_collection("Collection to analyze")
         if not collection:
             return
-        result = self.cleaner.analyze_collection(progress_callback=self._progress)
+        result = self.manager.analyze_collection(progress_callback=self._progress)
         print()
         ok(f"Health score: {result.get('health_score', 0)}/100")
         print(f"  Duplicate points : {result.get('duplicate_count', 0):,}")
@@ -222,7 +222,7 @@ class QdrantCleanerCLI:
         dry_run = self._confirm("Dry run only?", default=True)
         keep_per_group = int(self._prompt("Keep per duplicate group", default="1"))
         optimize = self._confirm("Optimize after cleanup?", default=False)
-        result = self.cleaner.one_stop_clean(
+        result = self.manager.one_stop_clean(
             dry_run=dry_run,
             keep_per_group=keep_per_group,
             optimize=optimize,
@@ -241,7 +241,7 @@ class QdrantCleanerCLI:
         normalize = self._confirm("Normalize vectors?", default=True)
         remove_invalid = self._confirm("Remove invalid vectors?", default=True)
         dry_run = self._confirm("Dry run only?", default=True)
-        result = self.cleaner.repair_vectors(
+        result = self.manager.repair_vectors(
             normalize=normalize,
             remove_invalid=remove_invalid,
             dry_run=dry_run,
@@ -267,7 +267,7 @@ class QdrantCleanerCLI:
         if use_clustering:
             cluster_backend = self._prompt("Cluster backend [auto|gpu|cpu]", default="auto")
         dry_run = self._confirm("Dry run only?", default=True)
-        result = self.cleaner.semantic_deduplication(
+        result = self.manager.semantic_deduplication(
             similarity_threshold=threshold,
             keep_strategy=strategy,
             use_clustering=use_clustering,
@@ -292,7 +292,7 @@ class QdrantCleanerCLI:
         vector_weight = float(self._prompt("Vector anomaly weight", default="0.55"))
         action = self._prompt("Action [report|tag|delete]", default="report")
         dry_run = True if action == "report" else self._confirm("Dry run only?", default=True)
-        result = self.cleaner.scan_sparse(
+        result = self.manager.scan_sparse(
             percentile=percentile,
             vector_weight=vector_weight,
             action=action,
@@ -317,7 +317,7 @@ class QdrantCleanerCLI:
             cluster_backend = self._prompt("Cluster backend [auto|gpu|cpu]", default="auto")
         remove = self._confirm("Remove outliers?", default=False)
         dry_run = self._confirm("Dry run only?", default=True)
-        result = self.cleaner.detect_outliers(
+        result = self.manager.detect_outliers(
             method=method,
             contamination=contamination,
             cluster_backend=cluster_backend,
@@ -353,7 +353,7 @@ class QdrantCleanerCLI:
             warn("No filters entered.")
             return
         dry_run = self._confirm("Dry run only?", default=True)
-        result = self.cleaner.remove_points_by_payload_filter(
+        result = self.manager.remove_points_by_payload_filter(
             filters=filters,
             dry_run=dry_run,
             progress_callback=self._progress,
@@ -370,7 +370,7 @@ class QdrantCleanerCLI:
         """Prompt for Qdrant URL, check connectivity, and load collections."""
         width = 62
         print(f"\n  {dim('═' * width)}")
-        print(f"  {bold(cyan('QDRANT CLEANER'.center(width)))}")
+        print(f"  {bold(cyan('QDRANT MANAGER'.center(width)))}")
         print(f"  {dim('═' * width)}")
         print()
 
@@ -442,8 +442,8 @@ class QdrantCleanerCLI:
 
 
 def main() -> None:
-    """Standalone entry point for the OSS cleaner CLI."""
-    QdrantCleanerCLI().run()
+    """Standalone entry point for the OSS manager CLI."""
+    QdrantManagerCLI().run()
 
 
 if __name__ == "__main__":

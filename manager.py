@@ -1,4 +1,4 @@
-"""Utilities for cleaning and repairing Qdrant collections."""
+"""Utilities for managing and repairing Qdrant collections."""
 from __future__ import annotations
 
 import hashlib
@@ -28,7 +28,7 @@ from .dependencies import (
 )
 
 
-class QdrantCleaner:
+class QdrantManager:
     """Collection cleaning utilities"""
 
     def __init__(self, host="localhost", port=6333):
@@ -56,7 +56,7 @@ class QdrantCleaner:
             return False
 
     def list_collections(self, *, skip_collections: Optional[set[str]] = None) -> List[Dict[str, Any]]:
-        """List Qdrant collections with lightweight metadata for cleaner workflows."""
+        """List Qdrant collections with lightweight metadata."""
         skip = skip_collections or set()
         collections = []
 

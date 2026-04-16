@@ -1,4 +1,4 @@
-"""Open-source configuration for the standalone Qdrant cleaner."""
+"""Open-source configuration for the Qdrant Manager."""
 from __future__ import annotations
 
 import os
