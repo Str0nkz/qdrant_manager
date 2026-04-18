@@ -1,0 +1,2 @@
+[console_scripts]
+qdrant-manager = qdrant_manager.__main__:main

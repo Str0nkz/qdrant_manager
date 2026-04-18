@@ -1,0 +1,10 @@
+qdrant-client>=1.9.1
+
+[gpu]
+numpy>=1.26.0
+scikit-learn>=1.4.0
+cupy-cuda12x
+
+[vector]
+numpy>=1.26.0
+scikit-learn>=1.4.0

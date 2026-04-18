@@ -1,0 +1,15 @@
+Metadata-Version: 2.4
+Name: qdrant_manager
+Version: 0.1.0
+Summary: Lean open-source Qdrant collection management tool
+Requires-Python: >=3.10
+License-File: LICENSE
+Requires-Dist: qdrant-client>=1.9.1
+Provides-Extra: vector
+Requires-Dist: numpy>=1.26.0; extra == "vector"
+Requires-Dist: scikit-learn>=1.4.0; extra == "vector"
+Provides-Extra: gpu
+Requires-Dist: numpy>=1.26.0; extra == "gpu"
+Requires-Dist: scikit-learn>=1.4.0; extra == "gpu"
+Requires-Dist: cupy-cuda12x; extra == "gpu"
+Dynamic: license-file

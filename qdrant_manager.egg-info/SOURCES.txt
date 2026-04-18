@@ -1,0 +1,15 @@
+LICENSE
+README.md
+pyproject.toml
+./__init__.py
+./__main__.py
+./config.py
+./dependencies.py
+./manager.py
+./manager_cli.py
+qdrant_manager.egg-info/PKG-INFO
+qdrant_manager.egg-info/SOURCES.txt
+qdrant_manager.egg-info/dependency_links.txt
+qdrant_manager.egg-info/entry_points.txt
+qdrant_manager.egg-info/requires.txt
+qdrant_manager.egg-info/top_level.txt

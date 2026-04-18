@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qdrant_manager"
+version = "0.1.0"
+description = "Lean open-source Qdrant collection management tool"
+requires-python = ">=3.10"
+dependencies = [
+    "qdrant-client>=1.9.1",
+]
+
+[project.optional-dependencies]
+vector = [
+    "numpy>=1.26.0",
+    "scikit-learn>=1.4.0",
+]
+gpu = [
+    "numpy>=1.26.0",
+    "scikit-learn>=1.4.0",
+    "cupy-cuda12x",
+]
+
+[project.scripts]
+qdrant-manager = "qdrant_manager.__main__:main"
+
+[tool.setuptools]
+packages = ["qdrant_manager"]
+
+[tool.setuptools.package-dir]
+"qdrant_manager" = "."
